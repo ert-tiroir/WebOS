@@ -1,0 +1,109 @@
+<!------------------------------------------------------------------------------------>
+<!-- example.html                                                                   -->
+<!--                                                                                -->
+<!-- This file contains a simple example using WebOS, providing the necessary data  -->
+<!-- to the Molyb framework                                                         -->
+<!------------------------------------------------------------------------------------>
+<!--                    This file part of the ERT-Tiroir project                    -->
+<!--                       https://github.com/ert-tiroir/WebOS                      -->
+<!------------------------------------------------------------------------------------>
+<!-- MIT License                                                                    -->
+<!--                                                                                -->
+<!-- Copyright (c) 2023 ert-tiroir                                                  -->
+<!--                                                                                -->
+<!-- Permission is hereby granted, free of charge, to any person obtaining a copy   -->
+<!-- of this software and associated documentation files (the "Software"), to deal  -->
+<!-- in the Software without restriction, including without limitation the rights   -->
+<!-- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell      -->
+<!-- copies of the Software, and to permit persons to whom the Software is          -->
+<!-- furnished to do so, subject to the following conditions:                       -->
+<!--                                                                                -->
+<!-- The above copyright notice and this permission notice shall be included in all -->
+<!-- copies or substantial portions of the Software.                                -->
+<!--                                                                                -->
+<!-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR     -->
+<!-- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,       -->
+<!-- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE    -->
+<!-- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER         -->
+<!-- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  -->
+<!-- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE  -->
+<!-- SOFTWARE.                                                                      -->
+<!------------------------------------------------------------------------------------>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="molyb/tailwind.js"></script>
+    <script src="molyb/framework.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+
+            width: 100vw;
+            height: 100vh;
+
+            overflow: hidden;
+        }
+    </style>
+    <style id="tailwind-css">
+        body {
+            margin: 0;
+            font-family: 'roboto';
+            overflow-x: hidden;
+        }
+        a {
+            text-decoration: none;
+        }
+
+        * {
+            --p: 0px;
+            --py: var(--p);
+            --px: var(--p);
+            --pt: var(--py);
+            --pb: var(--py);
+            --pl: var(--px);
+            --pr: var(--px);
+            --w: auto;
+            --h: auto;
+            padding-top:    var(--pt) !important;
+            padding-bottom: var(--pb) !important;
+            padding-left:   var(--pl) !important;
+            padding-right:  var(--pr) !important;
+            --duration: 0ms;
+
+            width:  calc(var(--w) - var(--pl) - var(--pr)) !important;
+            height: calc(var(--h) - var(--pb) - var(--pt)) !important;
+
+            transition-duration: var(--duration);
+
+            font-family: 'Inter';
+        }
+        p {
+            padding: 0;
+            margin:  0;
+        }
+        input {
+            --w: 100%;
+            border: none;
+            outline: none;
+        }
+        button {
+            border: none;
+            background: none;
+        }
+
+        @font-face {
+            font-family: Inter;
+            src: url(assets/Inter-VarFont.ttf);
+        }
+    </style>
+</head>
+<body>
+    <script src="example.js" type="module"></script>
+</body>
+</html>
