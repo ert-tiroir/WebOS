@@ -1,13 +1,16 @@
 
 import websockets
 import json
-from server.connection import Connection
+from osserver.connection import Connection
+from osserver.message import Message
 
-from server.providers.abstract import AbstractProvider
+from osserver.providers.abstract import AbstractProvider
 
 import asyncio
 import logging
 import os
+
+import traceback
 
 logger = logging.getLogger("WebOS")
 
@@ -97,10 +100,14 @@ class WebOSServer:
 
                 logger.info("Received message for provider '" + target_provider_name + "'")
                 
-                await target_provider.on_message(connection, data)
+                await target_provider.on_message(connection, Message(connection, data))
         except Exception as ex:
-            logger.critical("Client was kicked out due to an unexpected exception")
-            print(ex)
+            if isinstance(ex, websockets.exceptions.ConnectionClosedOK):
+                logger.info("Client disconnected properly")
+            else:
+                logger.critical("Client was kicked out due to an unexpected exception")
+                
+                traceback.print_exception(ex)
         
         self.connections.remove(connection)
         

@@ -1,10 +1,10 @@
 
-from server.connection import Connection
-from server.providers.broadcast import BroadcastProvider
-from server.providers.filesystem.diff import compute_diff, create_path_diff, delete_path_diff, move_path_diff, params_data_diff
-from server.providers.filesystem.events import FSProviderEventHandler
-from server.providers.filesystem.filetree import compute_file_tree, FileSystemNode, push_tree, pop_tree
-from server.server import WebOSServer
+from osserver.connection import Connection
+from osserver.providers.broadcast import BroadcastProvider
+from osserver.providers.filesystem.diff import compute_diff, create_path_diff, delete_path_diff, move_path_diff, params_data_diff
+from osserver.providers.filesystem.events import FSProviderEventHandler
+from osserver.providers.filesystem.filetree import compute_file_tree, FileSystemNode, push_tree, pop_tree
+from osserver.server import WebOSServer
 
 from watchdog.observers import Observer
 from watchdog.events import LoggingEventHandler
@@ -25,9 +25,7 @@ class FileSystemProvider(BroadcastProvider):
         await connection.send(self, { "patch": patch })
 
     def on_create (self, path: str, is_dir: bool):
-        print(path, is_dir)
         asyncio.run( self.broadcast({ "patch" : [ create_path_diff(path), params_data_diff(path, not is_dir, is_dir) ] }) )
-        print("ended...")
 
         file = FileSystemNode("", "", is_dir, not is_dir)
         push_tree(self.tree, file, path)
@@ -66,3 +64,6 @@ class FileSystemProvider(BroadcastProvider):
         self.observer.join()
         
         self.observer = None
+    
+    async def on_message(self, connection: Connection, message: any):
+        return

@@ -1,10 +1,10 @@
 
-from server.connection import Connection
+from osserver.connection import Connection
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from server.server import WebOSServer
+    from osserver.server import WebOSServer
 
 class AbstractProvider:
     def __init__(self, server: "WebOSServer"):

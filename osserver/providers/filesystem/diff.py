@@ -2,7 +2,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from server.providers.filesystem.filetree import FileSystemNode
+    from osserver.providers.filesystem.filetree import FileSystemNode
 
 def create_path_diff (path: str):
     return { "mode": "create", "path": path }

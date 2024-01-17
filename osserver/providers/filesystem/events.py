@@ -6,7 +6,7 @@ import os
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from server.providers.filesystem.provider import *
+    from osserver.providers.filesystem.provider import *
 
 class FSProviderEventHandler (FileSystemEventHandler):
     def __init__(self, provider: "FileSystemProvider"):

@@ -1,6 +1,6 @@
 
-from server.providers.filesystem.provider import FileSystemProvider
-from server.server import WebOSServer, use_default_server_config
+from osserver.providers.filesystem.provider import FileSystemProvider
+from osserver.server import WebOSServer, use_default_server_config
 
 use_default_server_config()
 
