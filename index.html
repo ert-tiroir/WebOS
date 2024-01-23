@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <script src="/libs/babel.min.js"></script>
 </head>
 <body>
     <script type="module">
         import { loadOS } from './webos/main.js'
 
-        loadOS( "ws://localhost:8042" )
+        loadOS( "http://localhost:5500", "/", "ws://localhost:8042" )
     </script>
 </body>
 </html>

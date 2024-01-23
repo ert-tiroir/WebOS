@@ -1,3 +1,6 @@
 # Python Server
 .venv
 **/__pycache__
+
+build/
+libs/babel.min.js
