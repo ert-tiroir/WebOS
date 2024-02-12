@@ -10,7 +10,7 @@ export function exit (code = 0) {
     while (true) {  }
 }
 
-export function printf (...args) {
+export function printf (...args: any[]) {
     write(STDOUT, args.map((x) => {
         if (x instanceof String || typeof x === "string") return x;
 

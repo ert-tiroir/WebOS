@@ -1,5 +1,6 @@
 import { getLogger } from "../logging.js";
-import { Message } from "./message.js";
+import { Message, MessageType } from "./message.js";
+import { AbstractProvider } from "./providers/abstract.js";
 
 const DEFAULT_COOLDOWN = 5;
 const STEP_DT_COOLDOWN = 5;
@@ -8,7 +9,18 @@ const MAXIMUM_COOLDOWN = 30;
 const logger = getLogger("API")
 
 export class WebSocketClient {
-    constructor (ip) {
+    ip      : string;
+    cooldown: number;
+    loading : boolean;
+
+    providers: { [key: string]: AbstractProvider };
+    callbacks: { [key: string]: (message: Message) => boolean };
+
+    send_uuid: number;
+
+    websocket: WebSocket | null;
+
+    constructor (ip: string) {
         this.ip = ip;
         
         this.cooldown = DEFAULT_COOLDOWN;
@@ -21,19 +33,19 @@ export class WebSocketClient {
 
         this.init();
     }
-    addProvider (provider) {
+    addProvider (provider: AbstractProvider) {
         this.providers[provider.getProviderName()] = provider;
     }
     clear () {
         if (this.websocket) {
             logger.info("Clearing old web socket events")
             
-            this.websocket.onload    = undefined;
-            this.websocket.onmessage = undefined;
-            this.websocket.onerror   = undefined;
-            this.websocket.onclose   = undefined;
+            this.websocket.onopen    = null;
+            this.websocket.onmessage = null;
+            this.websocket.onerror   = null;
+            this.websocket.onclose   = null;
             
-            this.websocket = undefined;
+            this.websocket = null;
         }
     }
     init () {
@@ -48,11 +60,11 @@ export class WebSocketClient {
         }
         this.websocket.onmessage = (ev) => this.onmessage (ev)
 
-        this.websocket.onerror = (ev) => {
+        this.websocket.onerror = (_) => {
             logger.danger("An error occured with the socket")
             this.reload();
         }
-        this.websocket.onclose = (ev) => {
+        this.websocket.onclose = (_) => {
             logger.danger("The connection was closed")
             this.reload();
         }
@@ -76,14 +88,16 @@ export class WebSocketClient {
         if (this.cooldown >= MAXIMUM_COOLDOWN) this.cooldown = MAXIMUM_COOLDOWN;
     }
 
-    onload (event) {
+    onload (_: Event) {
         for (let provider in this.providers)
-            this.providers[provider].onload();
+            (this.providers[provider] as any).onload();
     }
-    onanswer (json) {
+    onanswer (json: MessageType) {
         let message = new Message(json);
+        let target  = message.answer_to
+        if (target === undefined) return ;
 
-        let callback = this.callbacks[message.answer_to]
+        let callback = this.callbacks[target]
         if (!callback) {
             logger.warning("Could not find the callback for the answer");
             return ;
@@ -92,13 +106,14 @@ export class WebSocketClient {
         let shouldStayOn = callback(message);
         if (shouldStayOn) return ;
 
-        delete this.callbacks[message.answer_to];
+        delete this.callbacks[target];
     }
-    onmessage (data) {
+    onmessage (data: MessageEvent<any>) {
         const json = JSON.parse(data.data);
 
         if (json['is_answer']) {
-            this.onanswer(json);
+            this.onanswer(json as MessageType);
+
             return ;
         }
 
@@ -117,7 +132,7 @@ export class WebSocketClient {
         provider.onmessage( new Message(json) );
     }
 
-    send (target, data, callback) {
+    send (target: string, data: any, callback: ((message: Message) => boolean) | undefined) {
         if (callback)
             this.callbacks[this.send_uuid] = callback;
         
@@ -127,6 +142,7 @@ export class WebSocketClient {
             "uuid": this.send_uuid ++
         };
 
+        if (this.websocket === null) return ;
         this.websocket.send(JSON.stringify(data))
     }
 }

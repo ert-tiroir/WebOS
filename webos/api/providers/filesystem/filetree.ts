@@ -1,6 +1,14 @@
 
 export class FileTreeNode {
-    constructor (relpath, name, isFile, isDirectory) {
+    relpath: string;
+    name   : string;
+
+    isFile     : boolean;
+    isDirectory: boolean;
+
+    subfiles: { [name: string]: FileTreeNode | undefined };
+
+    constructor (relpath: string, name: string, isFile: boolean, isDirectory: boolean) {
         this.relpath = relpath;
         this.name    = name;
 
@@ -9,38 +17,44 @@ export class FileTreeNode {
     
         this.subfiles = {};
     }
-    addSubFile (file) {
+    addSubFile (file: FileTreeNode) {
         this.subfiles[file.name] = file;
     }
 }
 
 export class FileTree {
+    root: FileTreeNode | undefined;
+    sep : string;
     constructor (separator = "/") {
         this.root = undefined;
         this.sep  = separator;
     }
 
-    getFileInNode (node, names, offset) {
+    getFileInNode (node: FileTreeNode | undefined, names: string[], offset: number): FileTreeNode | undefined {
         if (node == undefined || offset == names.length) return node;
         
-        let next = names[offset] == "" ? node : node.subfiles[names[offset]]
+        let name = names[offset];
+        if (name === undefined) return undefined;
+
+        let next = names[offset] == "" ? node : node.subfiles[name]
         return this.getFileInNode(next, names, offset + 1);
     }
-    getDirectoryAndName (relpath) {
+    getDirectoryAndName (relpath: string): [ FileTreeNode | undefined, string ] {
         let paths = relpath.split(this.sep)
         
-        let name = paths[paths.length - 1];
+        let name = paths[paths.length - 1] as string;
         paths.splice(paths.length - 1, 1);
+
         return [this.getFile(paths.join(this.sep)), name];
     }
-    getFile (relpath) {
+    getFile (relpath: string): FileTreeNode | undefined {
         if (relpath.startsWith(this.sep))
             relpath = relpath.substring(this.sep.length);
 
         return this.getFileInNode(this.root, relpath.split(this.sep), 0);
     }
 
-    popFile (relpath) {
+    popFile (relpath: string): FileTreeNode | undefined {
         let [dir, name] = this.getDirectoryAndName(relpath);
         console.log(dir, name)
         if (dir === undefined || name === undefined) return undefined;
@@ -49,7 +63,7 @@ export class FileTree {
         dir.subfiles[name] = undefined;
         return file;
     }
-    pushFile (relpath, file) {
+    pushFile (relpath: string, file: FileTreeNode) {
         if (relpath == this.sep) {
             this.root = file;
             file.relpath = this.sep;
@@ -64,10 +78,10 @@ export class FileTree {
         file.name    = name;
     }
 
-    moveFile (src, dest) {
+    moveFile (src: string, dest: string) {
         let file = this.popFile(src);
         if (file === undefined) return ;
 
-        this.pushFile(dest);
+        this.pushFile(dest, file);
     }
 }

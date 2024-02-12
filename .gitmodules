@@ -1,0 +1,3 @@
+[submodule "Molyb"]
+	path = molyb
+	url = git@github.com:FoodRegister/Molyb.git

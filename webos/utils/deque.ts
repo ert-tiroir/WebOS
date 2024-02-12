@@ -3,7 +3,13 @@
  * Circular queue with similar implementation to vectors
  */
 export class Deque {
-    constructor (size) {
+    offset: number;
+    size  : number;
+
+    max_size: number;
+    data    : any[];
+
+    constructor (size: number) {
         this.offset = 0;
         this.size   = 0;
 
@@ -19,7 +25,6 @@ export class Deque {
         this.max_size *= 2;
         let ndata = new Array( this.max_size );
 
-        let first = true;
         for (let di = 0; di < this.size; di ++) {
             let i = this.offset + di;
             if (i >= this.size) i -= this.size;
@@ -31,7 +36,7 @@ export class Deque {
         this.offset = 0;
     }
 
-    pushFront (object) {
+    pushFront (object: any) {
         this.offset --;
         this.size   ++;
         if (this.offset == -1) this.offset += this.max_size;
@@ -52,7 +57,7 @@ export class Deque {
         return this.data[this.offset];
     }
 
-    pushBack (object) {
+    pushBack (object: any) {
         let i = this.offset + this.size;
         if (i >= this.max_size) i -= this.max_size;
 

@@ -1,11 +1,15 @@
+import { WebSocketClient } from "webos/api/client.js";
 import { getLogger } from "../../../logging.js";
 import { AbstractProvider } from "../abstract.js";
 import { FileTree, FileTreeNode } from "./filetree.js";
+import { Message } from "webos/api/message.js";
 
 const logger = getLogger("FileSystem");
 
 export class FileSystemProvider extends AbstractProvider {
-    constructor (client) {
+    tree: FileTree;
+
+    constructor (client: WebSocketClient) {
         super(client);
     }
     getProviderName () {
@@ -15,7 +19,7 @@ export class FileSystemProvider extends AbstractProvider {
     onload () {
         this.tree = new FileTree();
     }
-    onmessage (message) {
+    onmessage (message: Message) {
         if (message?.data?.patch === undefined) return ;
 
         for (let data of message.data.patch) {

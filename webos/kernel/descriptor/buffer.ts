@@ -1,14 +1,16 @@
 
-import { Deque } from "../../../webos/utils/deque.js";
+import { Deque } from "../../utils/deque.js";
 import { AbstractDescriptor } from "./abstract.js";
 
 export class BufferDescriptor extends AbstractDescriptor {
+    buffer: Deque;
+    
     constructor () {
         super();
         this.buffer = new Deque(0);
     }
 
-    read (size) {
+    read (size: number): string | number {
         let result = [];
 
         for (let i = 0; i < size && this.buffer.size != 0; i ++)
@@ -19,8 +21,7 @@ export class BufferDescriptor extends AbstractDescriptor {
     available () {
         return this.buffer.size;
     }
-    write (data) {
-        console.log(data)
+    write (data: string) {
         for (let chr of data)
             this.buffer.pushBack(chr);
 
