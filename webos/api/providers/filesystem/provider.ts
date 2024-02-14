@@ -9,13 +9,31 @@ const logger = getLogger("FileSystem");
 export class FileSystemProvider extends AbstractProvider {
     tree: FileTree;
 
+    promises: ((...args: any) => void)[];
+
     constructor (client: WebSocketClient) {
         super(client);
+
+        this.promises = [];
     }
     getProviderName () {
         return "filesystem";
     }
+
+    readFile (path: string): Promise<string | null> {
+        return new Promise<string | null> ((resolve, _) => {
+            this.client.send(this.getProviderName(), { type: "read", path: path }, (message) => {
+                resolve(atob(message.data.data));
+                
+                return false;
+            })
+        })
+    }
     
+    waitForLoad (): Promise<void> | void {
+        if (this.tree !== null && this.tree !== undefined) return ;
+        return new Promise((resolve, _) => this.promises.push(resolve));
+    }
     onload () {
         this.tree = new FileTree();
     }
@@ -55,5 +73,8 @@ export class FileSystemProvider extends AbstractProvider {
                 this.tree.pushFile( data.destination, file );
             }
         }
+    
+        for (let promise of this.promises) promise();
+        this.promises = [];
     }
 }

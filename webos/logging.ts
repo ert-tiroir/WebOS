@@ -1,6 +1,6 @@
 
-let conf_level: number = 2;
-let locale    : string = "en-US";
+let conf_level : number = 0;
+let locale     : string = "en-US";
 
 class LoggingLevel {
     name: string;
@@ -55,7 +55,7 @@ class Logger {
 
             this[key as LEVEL_LIST] = (message: string) => {
                 let res = this.format( level.getName(), message );
-
+                
                 if (level.usable())
                     level.callback(res);
             }

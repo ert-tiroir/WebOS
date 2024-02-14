@@ -113,8 +113,8 @@ export class WindowContainer {
     get maxWidth  () { return this._sizeRectangle.right;    }
     get maxHeight () { return this._sizeRectangle.bottom;   }
 
-    constructor (window: HTMLElement, index: number, props: WindowProps, movers: [ HTMLElement, number ][]) {
-        this.window = window;
+    constructor (_window: HTMLElement, index: number, props: WindowProps, movers: [ HTMLElement, number ][]) {
+        this.window = _window;
         this.index  = index;
 
         if (props.resizable !== undefined)
@@ -127,7 +127,10 @@ export class WindowContainer {
         if (props.maxWidth)  _maxWidth  = props.maxWidth;
         if (props.maxHeight) _maxHeight = props.maxHeight;
 
-        this._clientRectangle = new Rectangle(0, props.width, 0, props.height);
+        let left = (window.innerWidth  - props.width)  / 2;
+        let top  = (window.innerHeight - props.height) / 2;
+
+        this._clientRectangle = new Rectangle(left, left + props.width, top, top + props.height);
         this._sizeRectangle   = new Rectangle(_minWidth, _maxWidth, _minHeight, _maxHeight);
 
         window.addEventListener("click", () => WINDOW_MANAGER.focus(this.index));

@@ -2,12 +2,15 @@
 import { WebSocketClient } from "./api/client.js";
 import { FileSystemProvider } from "./api/providers/filesystem/provider.js";
 import { execute } from "./kernel/exec.js";
+import { LoaderContext } from "./kernel/loader/context.js";
+import { Loader } from "./kernel/loader/manager.js";
 import { DEBUG, loggingConfig } from "./logging.js";
 import { createModules } from "./modules/manager.js";
 
-export function loadOS (_webOSURL: string, _osSeparator: string, ip: string) {
+export async function loadOS (_webOSURL: string, _osSeparator: string, ip: string) {
     let client = new WebSocketClient(ip);
-    client.addProvider( new FileSystemProvider(client) );
+    globalThis.fileSystem = new FileSystemProvider(client);
+    client.addProvider( globalThis.fileSystem );
 
     (window as any).webOSClient = client;
 
@@ -23,7 +26,14 @@ export function loadOS (_webOSURL: string, _osSeparator: string, ip: string) {
 
     loggingConfig(DEBUG);
 
-    execute(`//
+    await fileSystem.waitForLoad();
+
+    execute(new Loader(document.location.origin + "/lib"), new LoaderContext(...[ "" ]), "boot.js");
+    //let loader = new Loader(document.location.origin + "/lib");
+    //let ctx    = new LoaderContext(...[ "/user/bin" ]);
+    //execute(loader, ctx, "null.js");
+
+    /**execute(`//
     // The purpose of this app is to provide a pipe for which the input goes nowhere
     //
     // Somewhat equivalent to /dev/null
@@ -36,10 +46,21 @@ export function loadOS (_webOSURL: string, _osSeparator: string, ip: string) {
     import { Component } from "~/molyb/molyb/component.js";
 
     import { Window } from "~/webos/modules/window/window.js";
+
+    class C extends Component {
+        constructor (text) {
+            super();
+            this.text = text;
+        }
+        init () {}
+        update () {
+            return <div>{ this.text }</div>;
+        }
+    }
     
-    let window = new Window(undefined, { width: 500, height: 500, minWidth: 100, minHeight: 100, maxWidth: 900, maxHeight: 900 });
+    let window = new Window(new C("win1"), { width: 500, height: 500, minWidth: 100, minHeight: 100, maxWidth: 900, maxHeight: 900 });
     window.open();
-    window = new Window(undefined, { width: 500, height: 500, minWidth: 100, minHeight: 100, maxWidth: 900, maxHeight: 900 });
+    window = new Window(new C("win2"), { width: 500, height: 500, minWidth: 100, minHeight: 100, maxWidth: 900, maxHeight: 900 });
     window.open();
 
     (async () => {
@@ -52,5 +73,5 @@ export function loadOS (_webOSURL: string, _osSeparator: string, ip: string) {
         modules.desktop.setBackground("/assets/example/interface_background.png");
         
         //setTimeout(() => exit(0), 1000);
-    })();`, "<input>");
+    })();`, "<input>");*/
 }

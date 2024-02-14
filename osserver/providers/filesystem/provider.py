@@ -1,15 +1,18 @@
 
 from osserver.connection import Connection
+from osserver.message import Message
 from osserver.providers.broadcast import BroadcastProvider
 from osserver.providers.filesystem.diff import compute_diff, create_path_diff, delete_path_diff, move_path_diff, params_data_diff
 from osserver.providers.filesystem.events import FSProviderEventHandler
-from osserver.providers.filesystem.filetree import compute_file_tree, FileSystemNode, push_tree, pop_tree
+from osserver.providers.filesystem.filetree import compute_file_tree, FileSystemNode, get_in_tree, push_tree, pop_tree
 from osserver.server import WebOSServer
 
 from watchdog.observers import Observer
 from watchdog.events import LoggingEventHandler
 
+import base64
 import asyncio
+import os
 
 class FileSystemProvider(BroadcastProvider):
     def __init__(self, server: "WebOSServer"):
@@ -65,5 +68,16 @@ class FileSystemProvider(BroadcastProvider):
         
         self.observer = None
     
-    async def on_message(self, connection: Connection, message: any):
-        return
+    async def on_message(self, connection: Connection, message: Message):
+        type = message.data.get("type", "")
+
+        if type == "read":
+            node = get_in_tree(self.tree, message.data["path"][1:].split("/"))
+            if node == None: return
+
+            path = os.path.join(self.server.os_path, message.data["path"][1:])
+            file = open(path, 'rb')
+            data = base64.b64encode( file.read() ).decode("utf-8")
+            file.close()
+
+            await message.answer({ "data": data })

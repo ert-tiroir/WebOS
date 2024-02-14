@@ -6,8 +6,10 @@ function iota () {
     return current_syscall_id;
 }
 
-export const EXIT_SYSCALL   = iota();
+export const EXIT_SYSCALL = iota();
+export const LOAD_SYSCALL = iota();
 
+export const  OPEN_SYSCALL = iota();
 export const  READ_SYSCALL = iota();
 export const WRITE_SYSCALL = iota();
 

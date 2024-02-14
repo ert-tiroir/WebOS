@@ -62,6 +62,8 @@ export class Window extends Component {
 
             movers.push([child, type]);
         }
+
+        childrens.push(this.view.render(false));
         let node = Molyb.createElement("div", { className: `absolute backdrop-blur-xl rounded-3xl bg-[rgba(217,217,217,0.2)]` }, ...childrens);
         if (node === undefined) return ;
 

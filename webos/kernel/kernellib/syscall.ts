@@ -8,8 +8,11 @@ const syscalls: { [key: number]: (program: Program, ...args: any[]) => any } = {
 initSTL    (syscalls);
 initUniSTD (syscalls);
 
-export function syscall (returns: boolean, program: Program, id: number, name: number, args: any[]) {
+export async function syscall (returns: boolean, program: Program, id: number, name: number, args: any[]) {
     let val = (syscalls[name] as any)(program, ...args);
+
+    if (val instanceof Promise)
+        val = await val;
 
     if (returns) {
         return {

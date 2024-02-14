@@ -21,7 +21,7 @@ const channel     : Channel     = new Channel("syscall", (syscall: string) => {
 
     if (resolve === undefined) return ;
 
-    resolve(JSON.parse(data.return_data));
+    resolve(data.return_data);
 });
 transceiver.registerChannel(channel);
 
