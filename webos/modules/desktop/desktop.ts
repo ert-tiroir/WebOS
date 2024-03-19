@@ -40,7 +40,7 @@ export class DesktopModule extends AbstractModule {
         };
     }
 
-    createExtension(): ModuleExtension {
+    createExtension(_program: Program): ModuleExtension {
         return new ModuleExtension();
     }
     getName(): string {

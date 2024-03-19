@@ -4,6 +4,7 @@ import { STDERR, STDIN, STDOUT } from "./consts.js";
 import { AbstractDescriptor } from "./descriptor/abstract.js";
 import { Loader } from "./loader/manager.js";
 import { LoaderContext } from "./loader/context.js";
+import { Transceiver } from "molyb/vdom/virtualdom/bridge/channels/transceiver.js";
 
 export class Program {
     worker: Worker;
@@ -17,6 +18,7 @@ export class Program {
     extensions: { [key: string]: ModuleExtension };
     loader:  Loader;
     context: LoaderContext;
+    transceiver: Transceiver;
     constructor (worker: Worker) {
         this.worker = worker;
 

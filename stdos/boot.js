@@ -37,14 +37,37 @@ import { exit, load } from "~/webos/kernel/workerlib/stdlib.js";
 
     try {
         let authContainer = (await import(authModule)).authenticate(config?.auth?.config);
-
+        
         await authContainer.start();
     } catch (exception) {
         logger.critical("Could not use the authentication module at path " + authPath + ". Maybe you forgot to export authenticate(config: any): { start: () => {} }.");
+        logger.critical(exception)
         exit(-1);
     }
 
     logger.info("Finished boot !")
 
-    exit(0);
+    const defaultNavbar = navbar.registerNavbar([
+        {
+            type: "menu",
+            name: "WebOS",
+            subparams: []
+        },
+        {
+            type: "menu",
+            name: "View",
+            subparams: [
+                {
+                    type: "button",
+                    name: "Open Shell",
+                    shortcut: "Alt+T",
+                    callback: () => {
+                        
+                    }
+                }
+            ]
+        }
+    ])
+
+    navbar.setDefaultNavbar(defaultNavbar);
 })();

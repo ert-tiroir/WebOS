@@ -1,4 +1,5 @@
 
+import { useDefaultConfig } from "../molyb/molyb/molyb.js";
 import { WebSocketClient } from "./api/client.js";
 import { FileSystemProvider } from "./api/providers/filesystem/provider.js";
 import { execute } from "./kernel/exec.js";
@@ -8,6 +9,8 @@ import { DEBUG, loggingConfig } from "./logging.js";
 import { createModules } from "./modules/manager.js";
 
 export async function loadOS (_webOSURL: string, _osSeparator: string, ip: string) {
+    useDefaultConfig(document.body);
+    
     let client = new WebSocketClient(ip);
     globalThis.fileSystem = new FileSystemProvider(client);
     client.addProvider( globalThis.fileSystem );

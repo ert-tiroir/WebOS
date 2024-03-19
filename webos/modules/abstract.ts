@@ -13,7 +13,7 @@ export abstract class AbstractModule {
         return new Proxy(this, {
             get: (target: AbstractModule, symbol: string | symbol, receiver) => {
                 let result: any;
-                if ((target as any)[symbol]) result = (target as any)[symbol];
+                if ((target as any)[symbol] !== undefined) result = (target as any)[symbol];
                 else result = (target.getContract() as any)[symbol];
 
                 if (result !== undefined && (typeof result === "function" || result instanceof Function))
@@ -24,7 +24,7 @@ export abstract class AbstractModule {
     }
 
     initProgram (program: Program) {
-        program.extensions[this.getName()] = this.createExtension();
+        program.extensions[this.getName()] = this.createExtension(program);
     }
     initChannel (transceiver: Transceiver, ...supArgs: any[]): void {
         this.channel = new Channel(this.getName(), (data: string) => {
@@ -64,5 +64,5 @@ export abstract class AbstractModule {
     abstract getWorkerEquivalent (): ModuleContract;
     abstract getGlobalContract   (): ModuleContract;
 
-    abstract createExtension (): ModuleExtension;
+    abstract createExtension (program: Program): ModuleExtension;
 };

@@ -109,6 +109,8 @@ export async function execute (loader: Loader, context: LoaderContext, path: str
     })
     transceiver.registerChannel(channel);
 
+    prog.transceiver = transceiver;
+
     let patcher = new DOMMutationPatcher(document.body);
     // @ts-ignore
     let _bridge = new WorkerDOMBridge(transceiver, "process.dom", patcher, new DOMSubscribable());

@@ -6,7 +6,7 @@ import { WINDOW_MANAGER } from "./manager.js";
 import { WindowProps } from "./window.js";
 
 export class WindowExtension extends ModuleExtension {
-    windows: { [key: number]: Node | undefined };
+    windows: { [key: number]: [ Node, number ] };
 
     constructor () {
         super();
@@ -40,12 +40,13 @@ export class WindowModule extends AbstractModule {
             registerWindow: (program: Program, nodeID: number, props: WindowProps, ...movers: [ number, number ][]) => {
                 let extension = this.getExtension(program);
                 let window    = program.patcher.nodes[nodeID] as HTMLElement;
-                
-                extension.windows[nodeID] = window;
+                if (window === undefined) return ;
 
                 let nmv = movers.map((value) => [program.patcher.nodes[value[0]], value[1]]) as [HTMLElement, number][];
 
-                WINDOW_MANAGER.registerWindow(window, props, nmv);
+                let idx = WINDOW_MANAGER.registerWindow(window, props, nmv);
+
+                extension.windows[nodeID] = [ window, idx ];
             }
         };
     }
@@ -56,7 +57,7 @@ export class WindowModule extends AbstractModule {
     getExtension (program: Program) {
         return program.getExtension(this.getName()) as WindowExtension;
     }
-    createExtension(): ModuleExtension {
+    createExtension(_program: Program): ModuleExtension {
         return new WindowExtension();
     }
 
